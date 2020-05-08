@@ -1,0 +1,44 @@
+# This code will help to scrapp the data from Make my trip 
+# I used selenium,beautiful soup and request
+# I have only scrap the hotel name but you can scrap anything from the website
+
+
+import csv
+import selenium.webdriver
+from bs4 import BeautifulSoup
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from time import sleep
+
+import sys
+
+
+user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
+
+options = selenium.webdriver.ChromeOptions()
+options.add_argument('headless')
+options.add_argument(f'user-agent={user_agent}')
+url2 = r'https://www.makemytrip.com/hotels/hotel-listing/?checkin=05042020&checkout=05052020&city=CTBLR&country=IN&locusId=CTBLR&locusType=city&roomStayQualifier=2e0e&searchText=Bengaluru&visitorId=09de406c-44fe-492f-92ad-f2b652cebd41'
+
+
+driver = selenium.webdriver.Chrome('C:/Users/Sourabh/chromedriver.exe',chrome_options=options)
+
+driver.get(url2)
+element = WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.CLASS_NAME, 'listingRowOuter')))
+print ("Scrolling document upto bottom ...")
+for j in range(1, 10):
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    sleep(6)
+
+body = driver.find_element_by_xpath('/html/body').get_attribute('innerHTML')
+driver.quit()
+
+soupBody = BeautifulSoup(body)
+
+hotelname = []
+spanHotelName = soupBody.select('#hlistpg_hotel_name')
+for hotel in spanHotelName:
+    print(hotel.get_text())
+    hotelname.append(hotel)
+print(len(hotelname))
